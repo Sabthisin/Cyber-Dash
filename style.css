@@ -4,12 +4,11 @@
 }
 
 * {
-    /* Critical: Stops the "Copy/Share" popup and selection handles */
+    /* Critical: Stops the "Copy/Share" popup */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    outline: none;
 }
 
 body, html {
@@ -18,12 +17,11 @@ body, html {
     background: var(--dark);
     overflow: hidden;
     font-family: 'Segoe UI', sans-serif;
-    touch-action: none; /* Prevents pull-to-refresh and zoom */
+    touch-action: none; /* Disables browser zoom/scroll for faster response */
 }
 
 canvas { display: block; }
 
-/* Centering Logic */
 .screen {
     position: absolute; inset: 0;
     display: flex; justify-content: center; align-items: center;
@@ -36,12 +34,12 @@ canvas { display: block; }
     border: 2px solid var(--cyan);
     padding: 30px; border-radius: 20px;
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
-    width: 80%; max-width: 350px;
+    width: 85%; max-width: 380px;
 }
 
 .hud {
     position: absolute; top: 20px; width: 100%;
-    display: flex; justify-content: center; gap: 10px;
+    display: flex; justify-content: center; gap: 15px;
     z-index: 10; pointer-events: none;
 }
 
@@ -49,33 +47,35 @@ canvas { display: block; }
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid var(--cyan);
     padding: 6px 12px; border-radius: 5px;
-    color: var(--cyan); font-weight: bold; font-size: 0.8rem;
+    color: var(--cyan); font-weight: bold; font-size: 0.9rem;
 }
 
 .mobile-nav {
     position: absolute; bottom: 0; width: 100%;
-    height: 160px; display: flex; z-index: 30;
+    height: 180px; display: flex; z-index: 30;
 }
 
 .nav-zone {
     flex: 1; display: flex; align-items: center; justify-content: center;
-    font-size: 3rem; color: var(--cyan);
+    font-size: 4rem; color: var(--cyan);
     background: rgba(0, 243, 255, 0.02);
     border-top: 1px solid rgba(0, 243, 255, 0.1);
+    transition: background 0.1s;
 }
 
-.nav-zone:active { background: rgba(0, 243, 255, 0.15); }
+.nav-zone:active { background: rgba(0, 243, 255, 0.2); }
 
 .hidden { display: none !important; }
 
-button {
+.play-btn {
     background: transparent; color: white;
     border: 1px solid var(--cyan);
-    padding: 12px 24px; margin: 10px;
-    cursor: pointer; font-weight: bold; font-family: inherit;
+    padding: 15px 30px; margin: 10px;
+    cursor: pointer; font-size: 1.1rem;
+    font-weight: bold; width: 80%;
 }
 
-button:active { background: var(--cyan); color: black; }
+.play-btn:active { background: var(--cyan); color: black; }
 
 .crt-overlay {
     position: fixed; inset: 0;

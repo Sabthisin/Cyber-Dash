@@ -8,7 +8,7 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-// Block the "Right Click" or "Hold" menu globally
+// Disable Context Menu (No Copy/Paste popup)
 window.oncontextmenu = (e) => { e.preventDefault(); return false; };
 
 let gameState = "menu";
@@ -24,10 +24,10 @@ for(let i=0; i<60; i++) stars.push({x: Math.random()*canvas.width, y: Math.rando
 class Player {
     constructor(x, color) {
         this.x = x;
-        this.y = canvas.height - 240; // Spaced for mobile zones
+        this.y = canvas.height - 250; 
         this.w = 40; this.h = 40;
         this.color = color;
-        this.vx = 0; this.acc = 1.4; this.fric = 0.88;
+        this.vx = 0; this.acc = 1.5; this.fric = 0.85;
         this.reload = 0;
     }
 
@@ -43,7 +43,7 @@ class Player {
 
     draw() {
         ctx.save();
-        ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+        ctx.shadowBlur = 15; ctx.shadowColor = this.color;
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.moveTo(this.x + this.w/2, this.y);
@@ -54,7 +54,7 @@ class Player {
     }
 
     shoot() {
-        bullets.push({x: this.x + this.w/2 - 2, y: this.y, w: 4, h: 12, v: 11, color: this.color});
+        bullets.push({x: this.x + this.w/2 - 2, y: this.y, w: 4, h: 12, v: 12, color: this.color});
     }
 }
 
@@ -62,6 +62,7 @@ const keys = {};
 window.addEventListener("keydown", e => keys[e.code] = true);
 window.addEventListener("keyup", e => keys[e.code] = false);
 
+// FAST TOUCH HANDLER
 function handleMove(dir, active, event) {
     if (event) event.preventDefault(); // Stop mobile selection menu
     if (dir === 'Left') keys['ArrowLeft'] = active;
@@ -81,7 +82,7 @@ function startGame(mode) {
 
 function spawnEnemy() {
     if (gameState !== "playing") return;
-    enemies.push({ x: Math.random()*(canvas.width-40), y: -50, w: 40, h: 40, v: 3 + (score * 0.05)});
+    enemies.push({ x: Math.random()*(canvas.width-40), y: -50, w: 40, h: 40, v: 4 + (score * 0.05)});
 }
 setInterval(spawnEnemy, 1000);
 
@@ -91,7 +92,7 @@ function update() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "white";
-    stars.forEach(s => { s.y += 1; if (s.y > canvas.height) s.y = 0; ctx.fillRect(s.x, s.y, s.s, s.s); });
+    stars.forEach(s => { s.y += 1.2; if (s.y > canvas.height) s.y = 0; ctx.fillRect(s.x, s.y, s.s, s.s); });
 
     players.forEach(p => {
         if (keys['ArrowLeft'] || keys['KeyA']) p.vx -= p.acc;
@@ -106,7 +107,7 @@ function update() {
 
     enemies.forEach((en, ei) => {
         en.y += en.v;
-        ctx.strokeStyle = "red"; ctx.strokeRect(en.x, en.y, en.w, en.h);
+        ctx.strokeStyle = "red"; ctx.lineWidth = 2; ctx.strokeRect(en.x, en.y, en.w, en.h);
 
         bullets.forEach((b, bi) => {
             if (b.x < en.x+en.w && b.x+b.w > en.x && b.y < en.y+en.h && b.y+b.h > en.y) {

@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CYBER DASH</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>CYBER DASH | Instant Play</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,10 +18,10 @@
     <div id="menu" class="screen">
         <div class="content-box">
             <h1 class="neon-title">CYBER DASH</h1>
-            <p>AUTO-FIRE ENABLED</p>
+            <p>AUTO-FIRE ACTIVE</p>
             <div class="btn-group">
-                <button onclick="startGame('single')">SOLO MISSION</button>
-                <button onclick="startGame('multi')">LOCAL CO-OP</button>
+                <button class="play-btn" onclick="startGame('single')">SOLO MISSION</button>
+                <button class="play-btn" onclick="startGame('multi')">LOCAL CO-OP</button>
             </div>
             <p class="hint">Tap Sides to Move</p>
         </div>
@@ -33,22 +31,17 @@
         <div class="content-box">
             <h2 class="fail-text">SYSTEM FAILURE</h2>
             <p>FINAL SCORE: <span id="finalScore">0</span></p>
-            <button onclick="restartGame()">REBOOT</button>
+            <button class="play-btn" onclick="restartGame()">REBOOT</button>
         </div>
     </div>
 
     <div class="mobile-nav">
-        <div class="nav-zone left" ontouchstart="handleMove('Left', true, event)" ontouchend="handleMove('Left', false, event)">◀</div>
-        <div class="nav-zone right" ontouchstart="handleMove('Right', true, event)" ontouchend="handleMove('Right', false, event)">▶</div>
+        <div class="nav-zone" ontouchstart="handleMove('Left', true, event)" ontouchend="handleMove('Left', false, event)">◀</div>
+        <div class="nav-zone" ontouchstart="handleMove('Right', true, event)" ontouchend="handleMove('Right', false, event)">▶</div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <script src="script.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(() => console.log("Offline Active"));
-        }
-    </script>
 </body>
 </html>

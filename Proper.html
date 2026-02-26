@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CYBER DASH | Ultra Smooth</title>
+    <style>
+        :root {
+            --cyan: #00f3ff;
+            --pink: #ff00ff;
+            --dark: #050510;
+        }
+
+        * {
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--dark); overflow: hidden;
+            font-family: 'Segoe UI', sans-serif; touch-action: none;
+        }
+
+        canvas { display: block; image-rendering: auto; }
+
+        /* HUD Styling */
+        .hud {
+            position: absolute; top: 20px; width: 100%;
+            display: flex; justify-content: center; gap: 15px;
+            z-index: 10; pointer-events: none;
+        }
+
+        .stat {
+            background: rgba(5, 5, 16, 0.8);
+            border: 1px solid var(--cyan);
+            padding: 10px 20px; border-radius: 8px;
+            color: var(--cyan); font-weight: 900; font-size: 0.9rem;
+            text-shadow: 0 0 5px var(--cyan);
+            backdrop-filter: blur(4px);
+        }
+
+        .screen {
+            position: absolute; inset: 0;
+            display: flex; justify-content: center; align-items: center;
+            background: rgba(5, 5, 16, 0.9); z-index: 20;
+        }
+
+        .content-box {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--cyan);
+            padding: 40px; border-radius: 24px;
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+            text-align: center; width: 85%; max-width: 400px;
+        }
+
+        .play-btn {
+            background: var(--cyan); color: var(--dark);
+            border: none; padding: 18px 40px; border-radius: 12px;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+            width: 100%; margin-top: 20px; transition: transform 0.1s;
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+
+        .mobile-nav {
+            position: absolute; bottom: 0; width: 100%;
+            height: 30%; display: flex; z-index: 30;
+        }
+
+        .nav-zone {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; color: rgba(0, 243, 255, 0.3);
+            border: 1px solid rgba(0, 243, 255, 0.05);
+        }
+
+        .hidden { display: none !important; }
+
+        /* CRT Scanline effect for that retro look */
+        .crt::before {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 2; background-size: 100% 3px, 3px 100%; pointer-events: none;
+        }
+    </style>
+</head>
+<body class="crt">
+    
+    <div class="hud">
+        <div class="stat">SCORE: <span id="score">0</span></div>
+        <div class="stat">HULL: <span id="health">5</span></div>
+    </div>
+
+    <div id="menu" class="screen">
+        <div class="content-box">
+            <h1 style="color:var(--cyan); margin:0;">CYBER DASH</h1>
+            <p style="color:#666;">ULTRA-SMOOTH INTERFACE</p>
+            <button class="play-btn" onclick="startGame()">INITIATE MISSION</button>
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="screen hidden">
+        <div class="content-box">
+            <h1 style="color:var(--pink);">SYSTEM FAILURE</h1>
+            <p style="color:white;">FINAL SCORE: <span id="finalScore">0</span></p>
+            <button class="play-btn" onclick="location.reload()">REBOOT</button>
+        </div>
+    </div>
+
+    <div class="mobile-nav">
+        <div class="nav-zone" ontouchstart="handleMove('Left', true, event)" ontouchend="handleMove('Left', false, event)">◀</div>
+        <div class="nav-zone" ontouchstart="handleMove('Right', true, event)" ontouchend="handleMove('Right', false, event)">▶</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let width, height, lastTime = 0;
+        let gameState = "menu";
+        let score = 0, health = 5;
+        const keys = { Left: false, Right: false };
+        
+        // Entities
+        let player, bullets = [], enemies = [], stars = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            if(player) player.y = height - 150;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Player {
+            constructor() {
+                this.w = 45; this.h = 45;
+                this.x = width / 2 - this.w / 2;
+                this.y = height - 150;
+                this.vx = 0;
+                this.acc = 2500; // Acceleration per second
+                this.fric = 0.12; // Friction coefficient
+                this.reload = 0;
+            }
+
+            update(dt) {
+                // Smooth Movement using Delta Time
+                if (keys.Left) this.vx -= this.acc * dt;
+                if (keys.Right) this.vx += this.acc * dt;
+
+                this.vx *= Math.pow(this.fric, dt);
+                this.x += this.vx * dt;
+
+                // Screen Bounds
+                if (this.x < 0) { this.x = 0; this.vx = 0; }
+                if (this.x > width - this.w) { this.x = width - this.w; this.vx = 0; }
+
+                // Auto-Fire Rate (independent of FPS)
+                this.reload += dt;
+                if (this.reload > 0.15) { // 0.15 seconds between shots
+                    this.shoot();
+                    this.reload = 0;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.shadowBlur = 20; ctx.shadowColor = "#00f3ff";
+                ctx.fillStyle = "#00f3ff";
+                // Sleek triangle ship
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.w/2, this.y);
+                ctx.lineTo(this.x, this.y + this.h);
+                ctx.lineTo(this.x + this.w, this.y + this.h);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            shoot() {
+                bullets.push({ x: this.x + this.w/2 - 2, y: this.y, vy: -900 });
+            }
+        }
+
+        // Initialize Starfield
+        for(let i=0; i<100; i++) {
+            stars.push({ x: Math.random()*width, y: Math.random()*height, v: Math.random()*100 + 50, s: Math.random()*2 });
+        }
+
+        function handleMove(dir, active, event) {
+            if (event) event.preventDefault();
+            keys[dir] = active;
+        }
+
+        // Keyboard support
+        window.onkeydown = (e) => {
+            if(e.code === "ArrowLeft" || e.code === "KeyA") keys.Left = true;
+            if(e.code === "ArrowRight" || e.code === "KeyD") keys.Right = true;
+        };
+        window.onkeyup = (e) => {
+            if(e.code === "ArrowLeft" || e.code === "KeyA") keys.Left = false;
+            if(e.code === "ArrowRight" || e.code === "KeyD") keys.Right = false;
+        };
+
+        function startGame() {
+            player = new Player();
+            score = 0; health = 5;
+            enemies = []; bullets = [];
+            gameState = "playing";
+            document.getElementById("menu").classList.add("hidden");
+            requestAnimationFrame(gameLoop);
+        }
+
+        let enemyTimer = 0;
+        function gameLoop(timestamp) {
+            if (gameState !== "playing") return;
+
+            // Calculate Delta Time (seconds since last frame)
+            const dt = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            if (dt > 0.1) { requestAnimationFrame(gameLoop); return; } // Prevent huge jumps on lag
+
+            ctx.fillStyle = "#050510";
+            ctx.fillRect(0, 0, width, height);
+
+            // 1. Update & Draw Stars (Background)
+            ctx.fillStyle = "rgba(255,255,255,0.5)";
+            stars.forEach(s => {
+                s.y += s.v * dt;
+                if(s.y > height) s.y = 0;
+                ctx.fillRect(s.x, s.y, s.s, s.s);
+            });
+
+            // 2. Update Player
+            player.update(dt);
+            player.draw();
+
+            // 3. Bullets
+            ctx.fillStyle = "#00f3ff";
+            bullets.forEach((b, i) => {
+                b.y += b.vy * dt;
+                ctx.fillRect(b.x, b.y, 4, 15);
+                if (b.y < -20) bullets.splice(i, 1);
+            });
+
+            // 4. Enemy Spawning
+            enemyTimer += dt;
+            if (enemyTimer > 0.8) {
+                enemies.push({ x: Math.random()*(width-40), y: -50, v: 250 + (score*5), w: 40, h: 40 });
+                enemyTimer = 0;
+            }
+
+            // 5. Enemy Logic
+            enemies.forEach((en, i) => {
+                en.y += en.v * dt;
+                
+                // Draw Enemy
+                ctx.strokeStyle = "#ff00ff"; ctx.lineWidth = 3;
+                ctx.strokeRect(en.x, en.y, en.w, en.h);
+
+                // Collision with Bullets
+                bullets.forEach((b, bi) => {
+                    if (b.x < en.x + en.w && b.x + 4 > en.x && b.y < en.y + en.h && b.y + 15 > en.y) {
+                        enemies.splice(i, 1);
+                        bullets.splice(bi, 1);
+                        score++;
+                        document.getElementById("score").textContent = score;
+                    }
+                });
+
+                // Collision with Floor
+                if (en.y > height) {
+                    enemies.splice(i, 1);
+                    health--;
+                    document.getElementById("health").textContent = health;
+                    if (health <= 0) endGame();
+                }
+            });
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function endGame() {
+            gameState = "over";
+            document.getElementById("gameOverScreen").classList.remove("hidden");
+            document.getElementById("finalScore").textContent = score;
+        }
+
+        // Disable long-press context menu
+        window.oncontextmenu = (e) => e.preventDefault();
+    </script>
+</body>
+</html>

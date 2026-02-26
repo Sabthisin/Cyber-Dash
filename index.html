@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CYBER DASH</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    
+    <div class="hud">
+        <div class="stat">SCORE <span id="score">0</span></div>
+        <div class="stat">BEST <span id="highScore">0</span></div>
+        <div class="stat">HULL <span id="health">5</span></div>
+    </div>
+
+    <div id="menu" class="screen">
+        <div class="content-box">
+            <h1 class="neon-title">CYBER DASH</h1>
+            <p>AUTO-FIRE ENABLED</p>
+            <div class="btn-group">
+                <button onclick="startGame('single')">SOLO MISSION</button>
+                <button onclick="startGame('multi')">LOCAL CO-OP</button>
+            </div>
+            <p class="hint">Tap Sides to Move</p>
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="screen hidden">
+        <div class="content-box">
+            <h2 class="fail-text">SYSTEM FAILURE</h2>
+            <p>FINAL SCORE: <span id="finalScore">0</span></p>
+            <button onclick="restartGame()">REBOOT</button>
+        </div>
+    </div>
+
+    <div class="mobile-nav">
+        <div class="nav-zone left" ontouchstart="handleMove('Left', true, event)" ontouchend="handleMove('Left', false, event)">◀</div>
+        <div class="nav-zone right" ontouchstart="handleMove('Right', true, event)" ontouchend="handleMove('Right', false, event)">▶</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(() => console.log("Offline Active"));
+        }
+    </script>
+</body>
+</html>

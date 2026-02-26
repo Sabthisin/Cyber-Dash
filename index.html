@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CYBER DASH | Professional Edition</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-     <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
     <div class="crt-overlay"></div>
@@ -44,12 +42,5 @@
 
     <canvas id="gameCanvas"></canvas>
     <script src="script.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('sw.js')
-            .then(() => console.log("Offline Mode Ready"))
-            .catch(err => console.log("SW Registration Failed", err));
-        }
-      </script>
 </body>
 </html>

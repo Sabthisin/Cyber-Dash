@@ -1,15 +1,1 @@
-{
-    "name": "Cyber Dash: Neon Strike",
-    "short_name": "CyberDash",
-    "start_url": "index.html",
-    "display": "standalone",
-    "background_color": "#050510",
-    "theme_color": "#00f3ff",
-    "icons": [
-      {
-        "src": "https://cdn-icons-png.flaticon.com/512/528/528098.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ]
-  }
+

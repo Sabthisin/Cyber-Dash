@@ -1,0 +1,93 @@
+:root {
+    --neon-blue: #00f3ff;
+    --neon-pink: #ff00ff;
+}
+
+body {
+    margin: 0; padding: 0;
+    background: #050510;
+    color: white;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    overflow: hidden;
+    user-select: none;
+    touch-action: none;
+}
+
+canvas { display: block; }
+
+/* HUD Styling */
+.hud {
+    position: absolute;
+    top: 20px; width: 100%;
+    display: flex; justify-content: space-around;
+    z-index: 5; pointer-events: none;
+}
+
+.stat {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    color: var(--neon-blue);
+    text-shadow: 0 0 5px var(--neon-blue);
+    font-weight: bold;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Mobile Movement Zones */
+.mobile-nav {
+    position: absolute;
+    bottom: 0; width: 100%;
+    height: 150px;
+    display: flex;
+    z-index: 10;
+}
+
+.nav-zone {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 243, 255, 0.05);
+    border-top: 2px solid rgba(0, 243, 255, 0.2);
+    color: var(--neon-blue);
+    font-weight: bold;
+    letter-spacing: 2px;
+    transition: 0.2s;
+}
+
+.nav-zone:active {
+    background: rgba(0, 243, 255, 0.2);
+}
+
+/* Screens */
+.screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 20;
+}
+
+.hidden { display: none !important; }
+
+h1 { font-size: 4rem; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); margin: 0; }
+
+button {
+    background: transparent; color: white;
+    border: 2px solid var(--neon-blue);
+    padding: 15px 40px; margin: 10px;
+    cursor: pointer; font-size: 1.2rem;
+    transition: 0.3s;
+}
+
+button:hover { background: var(--neon-blue); color: black; box-shadow: 0 0 20px var(--neon-blue); }
+
+.crt-overlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none; z-index: 100;
+}

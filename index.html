@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CYBER DASH | Neon Strike</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    
+    <div class="hud">
+        <div class="stat">SCORE: <span id="score">0</span></div>
+        <div class="stat">BEST: <span id="highScore">0</span></div>
+        <div class="stat">HULL: <span id="health">5</span></div>
+    </div>
+
+    <div id="menu" class="screen">
+        <h1 class="glitch-text">CYBER DASH</h1>
+        <p>AUTO-FIRE ENABLED</p>
+        <div class="btn-group">
+            <button onclick="startGame('single')">START SOLO</button>
+            <button onclick="startGame('multi')">LOCAL CO-OP</button>
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="screen hidden">
+        <h2 class="fail-text">SYSTEM CRASH</h2>
+        <p>DATA RECOVERED: <span id="finalScore">0</span> POINTS</p>
+        <button onclick="restartGame()">REBOOT</button>
+    </div>
+
+    <div class="mobile-nav">
+        <div class="nav-zone" id="left-zone" 
+             ontouchstart="handleMove('Left', true)" 
+             ontouchend="handleMove('Left', false)">◀ MOVE LEFT</div>
+        <div class="nav-zone" id="right-zone" 
+             ontouchstart="handleMove('Right', true)" 
+             ontouchend="handleMove('Right', false)">MOVE RIGHT ▶</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+    <script src="script.js"></script>
+</body>
+</html>
